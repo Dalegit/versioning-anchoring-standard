@@ -1,0 +1,14 @@
+{
+  "release": {
+    "version": "0.1.0",
+    "releasedAtUtc": "2026-02-22T07:15:00Z",
+    "name": "Versioning Standard"
+  },
+  "artifacts": [
+    {
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "path": "site/index.html"
+    }
+  ],
+  "schemaVersion": "0.1.0"
+}

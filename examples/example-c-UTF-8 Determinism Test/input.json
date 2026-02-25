@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "0.1.0",
+  "release": {
+    "name": "Versioning Standard Café",
+    "version": "0.1.0",
+    "releasedAtUtc": "2026-02-22T07:15:00Z"
+  },
+  "artifacts": [
+    {
+      "path": "site/index.html",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    }
+  ]
+}

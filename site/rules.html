@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Versioning & Anchoring Standard — Rules</title>
+  <meta name="description" content="Detailed rules: Semantic Versioning, canonical manifests, SHA-256 hashing, anchoring discipline, and append-only history." />
+  <meta name="theme-color" content="#0b5fff" />
+  <style>
+    :root{
+      --bg:#ffffff; --fg:#0f172a; --muted:#475569; --muted2:#64748b; --line:#e2e8f0;
+      --card:#f8fafc; --accent:#0b5fff; --accent2:#2563eb; --shadow: 0 10px 30px rgba(2, 6, 23, .08);
+      --radius: 18px; --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --max: 1120px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:var(--sans);color:var(--fg);background:var(--bg);line-height:1.55;}
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .topbar{position:sticky;top:0;background:rgba(255,255,255,.86);backdrop-filter: blur(10px);border-bottom:1px solid var(--line);z-index:50;}
+    .nav{max-width:var(--max);margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2px;}
+    .mark{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;background:linear-gradient(180deg,#fff,#f1f5f9);}
+    .navlinks{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .navlinks a{font-size:14px;color:var(--muted);padding:8px 10px;border-radius:12px;}
+    .navlinks a:hover{background:var(--card);text-decoration:none;color:var(--fg)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:14px;padding:11px 14px;font-weight:700;border:1px solid var(--line);background:#fff;transition:transform .05s ease, background .2s ease;}
+    .btn:hover{background:var(--card);text-decoration:none}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{background:var(--accent);color:#fff;border-color:transparent}
+    .btn.primary:hover{background:var(--accent2)}
+    .wrap{max-width:var(--max);margin:0 auto;padding:26px 24px 34px}
+    h1{margin:14px 0 10px;font-size:40px;letter-spacing:-.8px;line-height:1.08;}
+    @media (max-width: 560px){ h1{font-size:34px} }
+    .lead{margin:0 0 18px;color:var(--muted);font-size:16px;max-width:78ch;}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:18px;}
+    .panel{border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+    .panel h2{margin:0 0 8px;font-size:16px}
+    .panel p{margin:0 0 10px;color:var(--muted);font-size:14px}
+    .card{border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:18px;}
+    .card h3{margin:0 0 8px;font-size:15px}
+    .card ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px}
+    .card li{margin:6px 0}
+    .span7{grid-column:span 7}
+    .span5{grid-column:span 5}
+    .span12{grid-column:span 12}
+    @media (max-width:900px){.span7,.span5{grid-column:span 12}}
+    .divider{margin:22px 0;border-top:1px solid var(--line)}
+    code{font-family:var(--mono);font-size:13px;background:#f1f5f9;border:1px solid var(--line);padding:2px 6px;border-radius:10px;}
+    pre{margin:0;font-family:var(--mono);font-size:13px;line-height:1.45;white-space:pre-wrap;color:#111827;}
+    .small{font-size:13px;color:var(--muted)}
+    .mono{font-family:var(--mono);font-size:13px;overflow-wrap:anywhere}
+    .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;font-size:12px;color:var(--muted);white-space:nowrap;}
+  
+    /* --- Consistent site nav --- */
+    .navcta{display:flex; gap:10px; flex-wrap:wrap}
+    .navlinks a.active{
+      background: var(--card);
+      color: var(--fg);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .navlinks a:focus-visible,
+    .btn:focus-visible{
+      outline: 3px solid rgba(11,95,255,.25);
+      outline-offset: 2px;
+    }
+
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <nav class="nav" aria-label="Primary">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M7 12a5 5 0 0 1 10 0" stroke="#0b5fff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M5 12a7 7 0 0 1 14 0" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 12v6" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="20" r="1.2" fill="#0f172a"/>
+          </svg>
+        </div>
+        <span>Versioning &amp; Anchoring</span>
+      </div>
+
+      <div class="navlinks" role="navigation" aria-label="Site">
+        <a href="index.html" class="">Home</a>
+        <a href="rules.html" class="active">Rules</a>
+        <a href="manifest.html" class="">Manifest</a>
+        <a href="verify.html" class="">Verify</a>
+        <a href="registry.html" class="">Versioning System</a>
+        <a href="definitions.html" class="">Definitions</a>
+        <a href="quiz.html" class="">Quiz</a>
+      </div>
+
+      <div class="navcta">
+        <a class="btn" href="index.html#guide">Guided flow</a>
+        <a class="btn primary" href="index.html#demo">Try the demo</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>Rules (Minute Detail)</h1>
+<div class="statusline" aria-label="Status">
+      <span class="pill"><strong>Draft</strong> v0.1.0</span>
+      <span class="pill">Scope: deterministic commitment + release manifests</span>
+      <span class="pill">Anchoring infrastructure: not included</span>
+    </div>
+
+    <p class="lead">
+      These rules define how to publish verifiable protocol releases using deterministic JSON manifests,
+      SHA-256 hashing, and optional public blockchain anchoring. The goal is independent verification
+      without trust assumptions.
+    </p>
+
+    <div class="grid" aria-label="Rules layout">
+      <section class="panel span7" id="principles" aria-label="Core principles">
+        <h2>1) Core Principles</h2>
+        <p class="small">A release is valid under this standard only if all core principles are satisfied.</p>
+
+<pre>
+1.1 Explicit Versioning
+- Every release MUST be assigned a version using Semantic Versioning (MAJOR.MINOR.PATCH).
+
+1.2 Canonical Manifest
+- Every release MUST be represented by a canonical JSON "release manifest".
+- The manifest is the authoritative representation of the release for hashing and verification.
+
+1.3 SHA-256 Hashing
+- The manifest MUST be canonicalized then hashed using SHA-256 prior to anchoring or publication.
+- The resulting hash is referred to as: manifestSha256.
+
+1.4 Immutability After Anchoring
+- The manifest MUST NEVER be modified after it has been anchored.
+- If any change is required, a new release version MUST be issued.
+
+1.5 Append-only Release History
+- Release history MUST be append-only.
+- Previous versions MUST NEVER be rewritten, replaced, or silently edited.
+</pre>
+
+        <div class="divider"></div>
+
+        <p class="small">
+          Summary: version it, manifest it, canonicalize it, hash it, optionally anchor it, and never rewrite history.
+        </p>
+      </section>
+
+      <aside class="card span5" aria-label="Definitions">
+        <h3>Definitions</h3>
+        <ul>
+          <li><strong>Release Bundle</strong>: The set of schemas + docs published as a release.</li>
+          <li><strong>Release Manifest</strong>: Canonical JSON describing the release (what it is).</li>
+          <li><strong>manifestSha256</strong>: SHA-256 hash of the canonical manifest bytes.</li>
+          <li><strong>Anchoring</strong>: Writing only <code>manifestSha256</code> on-chain to establish public chronology.</li>
+        </ul>
+
+        <div class="divider"></div>
+
+        <h3>Non-goals</h3>
+        <ul>
+          <li>Does not assert the content is “true”.</li>
+          <li>Does not publish private data on-chain.</li>
+          <li>Does not require a single vendor to verify.</li>
+        </ul>
+      </aside>
+
+      <section class="panel span12" id="semver" aria-label="Semantic Versioning Rules">
+        <h2>2) Semantic Versioning Rules (MAJOR.MINOR.PATCH)</h2>
+        <p class="small">SemVer is mandatory. Version numbers are part of the verification surface.</p>
+
+<pre>
+2.1 Version Format
+- Versions MUST be expressed as: MAJOR.MINOR.PATCH
+
+2.2 MAJOR
+- MAJOR MUST be incremented when backward compatibility is broken.
+- Examples:
+  - Breaking schema field requirements
+  - Renaming stable artifact IDs without compatibility support
+  - Removing fields that downstream users rely on
+
+2.3 MINOR
+- MINOR MUST be incremented when new backward-compatible functionality is added.
+- Examples:
+  - Adding optional fields
+  - Adding new schemas or docs without breaking existing ones
+  - Expanding documentation while keeping previous meaning intact
+
+2.4 PATCH
+- PATCH MUST be incremented when backward-compatible fixes or clarifications are made.
+- Examples:
+  - Typos, wording clarifications
+  - Non-breaking documentation corrections
+  - Correcting a manifest entry without changing the core contract (requires new release)
+
+2.5 Pre-1.0.0
+- Versions below 1.0.0 indicate experimental or unstable releases.
+- Breaking changes may occur more frequently before 1.0.0, but version numbers must still progress.
+
+2.6 No Reuse
+- A version number MUST NEVER be reused, even if the release is withdrawn.
+- If a release is invalidated, the registry should mark it as deprecated rather than rewriting history.
+</pre>
+      </section>
+
+      <section class="panel span12" id="canonical" aria-label="Canonicalization Requirements">
+        <h2>3) Canonicalization Requirements (Deterministic Manifest Bytes)</h2>
+        <p class="small">
+          Canonicalization exists to prevent “same content, different hash” failures across OS, editors, and tooling.
+        </p>
+
+<div class="note" style="margin-top:12px;">
+          <strong>v0.1.0 canonical JSON:</strong>
+          UTF-8, recursive lexicographic key sorting, JSON serialization with 2-space indentation, LF (<code>
+</code>) line endings, and <em>no trailing newline</em>.
+          (This is <em>not</em> full RFC 8785 JCS; alignment is a planned extension.)
+        </div>
+
+<pre>
+3.1 Encoding
+- Manifest JSON MUST be UTF-8 encoded.
+
+3.2 Key Order
+- All object keys MUST be sorted lexicographically.
+- Sorting MUST be applied recursively for nested objects.
+
+3.3 Stable Formatting
+- Stable formatting MUST be used.
+- Avoid insignificant whitespace changes that would alter bytes without altering meaning.
+
+3.4 Line Endings
+- Line endings MUST be normalized.
+- LF ("\n") MUST be used.
+
+3.5 Trailing Newline
+- No trailing newline unless explicitly defined by canonicalization rules.
+- If a trailing newline policy is adopted, it MUST be consistently applied.
+
+3.6 Determinism Requirement
+- Two independent implementations MUST be able to produce identical canonical bytes for the same manifest content.
+- Verification depends on determinism.
+</pre>
+
+        <div class="divider"></div>
+
+        <p class="small">
+          Tip: a manifest is not “whatever your browser exported”. It is a deterministic byte sequence.
+        </p>
+      </section>
+
+      <section class="panel span12" id="anchoring" aria-label="Anchoring Rules">
+        <h2>4) Anchoring Rules (Public Blockchain Chronology)</h2>
+        <p class="small">Anchoring is optional but recommended for public chronology. Only the hash is anchored.</p>
+
+<pre>
+4.1 Anchored Value
+- The anchored value MUST be the SHA-256 hash of the canonical manifest: manifestSha256
+
+4.2 On-chain Data Minimization
+- Only the manifest hash is written to the blockchain.
+- Private release content is not published on-chain.
+
+4.3 No Metadata Injection
+- Blockchain metadata (TxID, block number, timestamp) MUST NOT be inserted back into the original manifest.
+- The manifest remains immutable once hashed/anchored.
+- Metadata belongs in the registry entry, not inside the anchored manifest bytes.
+
+4.4 Multi-network Anchoring
+- Multiple anchors on different networks are permitted for the same manifestSha256.
+- Each anchor record MUST reference the exact manifestSha256.
+
+4.5 Anchor Record Integrity
+- Anchor records MUST record, at minimum:
+  - network name
+  - transaction ID
+  - block number (if applicable)
+  - the anchored value (manifestSha256)
+</pre>
+      </section>
+
+      <section class="panel span12" id="governance" aria-label="Governance & Integrity">
+        <h2>5) Governance & Integrity</h2>
+        <p class="small">This governs reference implementations and how forks/third-parties represent themselves.</p>
+
+<pre>
+5.1 Reference Implementation
+- An "official reference implementation" may be maintained under a specific name/organization.
+
+5.2 Forks and Implementations
+- Forks may implement the standard.
+- Forks MUST NOT represent themselves as the official reference implementation without permission.
+
+5.3 Public Verifiability
+- Release records MUST remain publicly verifiable.
+- The registry should provide sufficient information for independent verification.
+
+5.4 Discipline Over Velocity
+- Discipline and transparency are prioritized over feature velocity.
+- The system is intended to be credible, not trendy.
+</pre>
+      </section>
+    </div>
+
+    <footer class="foot" aria-label="Footer">
+      <div>
+        <strong>Versioning & Anchoring Standard</strong><br/>
+        <span class="small">Static rules documentation • Append-only mindset</span>
+      </div>
+      <div>
+        <a href="index.html">Home</a> •
+        <a href="verify.html">How to verify</a> •
+        <a href="manifest.html">Manifest</a>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>

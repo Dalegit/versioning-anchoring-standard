@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Versioning &amp; Anchoring — Registry (Mockup)</title>
+  <meta name="description" content="Static visual mockup of anchored versions grouped by software." />
+  <meta name="theme-color" content="#0b5fff" />
+  <style>
+
+    :root{
+      --bg:#ffffff;
+      --fg:#0f172a;
+      --muted:#475569;
+      --muted2:#64748b;
+      --line:#e2e8f0;
+      --card:#f8fafc;
+      --accent:#0b5fff;
+      --accent2:#2563eb;
+      --shadow: 0 10px 30px rgba(2, 6, 23, .08);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --max: 1120px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--fg);
+      background:var(--bg);
+      line-height:1.55;
+    }
+    a{color:inherit; text-decoration:none}
+    a:hover{text-decoration:underline}
+    .topbar{
+      position:sticky; top:0;
+      background:rgba(255,255,255,.86);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+      z-index:50;
+    }
+    .nav{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:14px 24px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      font-weight:800; letter-spacing:.2px;
+    }
+    .mark{
+      width:34px; height:34px; border-radius:10px;
+      border:1px solid var(--line);
+      display:grid; place-items:center;
+      background:linear-gradient(180deg, #fff, #f1f5f9);
+    }
+    .navlinks{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .navlinks a{
+      font-size:14px; color:var(--muted);
+      padding:8px 10px; border-radius:12px;
+    }
+    .navlinks a:hover{background:var(--card); text-decoration:none; color:var(--fg)}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      border-radius:14px; padding:11px 14px;
+      font-weight:700; border:1px solid var(--line);
+      background:#fff;
+      transition: transform .05s ease, background .2s ease;
+      cursor:pointer;
+    }
+    .btn:hover{background:var(--card); text-decoration:none}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{background:var(--accent); color:#fff; border-color:transparent}
+    .btn.primary:hover{background:var(--accent2)}
+    .wrap{max-width:var(--max); margin:0 auto; padding:26px 24px 34px}
+    h1{
+      margin:14px 0 10px;
+      font-size:40px;
+      letter-spacing:-.8px;
+      line-height:1.08;
+    }
+    @media (max-width: 560px){ h1{font-size:34px} }
+    .lead{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size:16px;
+      max-width: 80ch;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:16px;
+      margin-top:18px;
+    }
+    .panel{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius: var(--radius);
+      padding:18px;
+      box-shadow: var(--shadow);
+    }
+    .panel h2{margin:0 0 8px; font-size:16px}
+    .panel p{margin:0 0 10px; color:var(--muted); font-size:14px}
+    .card{
+      border:1px solid var(--line);
+      background:var(--card);
+      border-radius: var(--radius);
+      padding:18px;
+    }
+    .card h3{margin:0 0 8px; font-size:15px}
+    .card ul{margin:0; padding-left:18px; color:var(--muted); font-size:14px}
+    .card li{margin:6px 0}
+    .span7{grid-column: span 7}
+    .span5{grid-column: span 5}
+    .span12{grid-column: span 12}
+    @media (max-width: 900px){
+      .span7, .span5{grid-column: span 12}
+    }
+    .divider{margin:22px 0; border-top:1px solid var(--line)}
+    .mono{font-family:var(--mono); font-size:13px; overflow-wrap:anywhere}
+    code{
+      font-family:var(--mono);
+      font-size:13px;
+      background:#f1f5f9;
+      border:1px solid var(--line);
+      padding:2px 6px;
+      border-radius:10px;
+    }
+    pre{
+      margin:0;
+      font-family:var(--mono);
+      font-size:13px;
+      line-height:1.45;
+      white-space:pre-wrap;
+      color:#111827;
+    }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background:#fff;
+    }
+    thead th{
+      text-align:left;
+      font-size:12px;
+      color:var(--muted2);
+      padding:12px 12px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg, #fff, #f8fafc);
+      letter-spacing:.2px;
+    }
+    tbody td{
+      padding:12px 12px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+      font-size:14px;
+    }
+    tbody tr:last-child td{border-bottom:none}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .dot{width:8px; height:8px; border-radius:999px; background:#b45309}
+    .dot.good{background:#16a34a}
+    .dot.bad{background:#dc2626}
+    .kvs{display:grid; grid-template-columns:1fr; gap:10px; margin-top:10px;}
+    .kv{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      background:linear-gradient(180deg, #fff, #f8fafc);
+    }
+    .k{font-size:12px; color:var(--muted2); margin-bottom:6px}
+    .v{font-family:var(--mono); font-size:13px; overflow-wrap:anywhere}
+    .step{
+      display:flex; gap:12px; align-items:flex-start;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background:#fff;
+      padding:14px;
+    }
+    .badge{
+      width:28px; height:28px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, #fff, #f8fafc);
+      display:grid; place-items:center;
+      font-weight:800;
+      color:#0f172a;
+      flex:0 0 auto;
+    }
+    .step h3{margin:0; font-size:14px}
+    .step p{margin:6px 0 0; color:var(--muted); font-size:13px}
+    .step .actions{margin-top:10px; display:flex; gap:10px; flex-wrap:wrap}
+    .input, textarea, select{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:14px;
+      background:#fff;
+      color:var(--fg);
+      outline:none;
+    }
+    textarea{min-height:140px; resize:vertical}
+    .hint{font-size:12px; color:var(--muted2); margin-top:6px}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+    @media (max-width: 820px){ .row{grid-template-columns: 1fr} }
+
+    .foot{
+      margin-top:28px;
+      padding-top:18px;
+      border-top:1px solid var(--line);
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .foot a{color:var(--accent); font-weight:700; text-decoration:none}
+    .foot a:hover{text-decoration:underline}
+  
+    /* --- Consistent site nav --- */
+    .navcta{display:flex; gap:10px; flex-wrap:wrap}
+    .navlinks a.active{
+      background: var(--card);
+      color: var(--fg);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .navlinks a:focus-visible,
+    .btn:focus-visible{
+      outline: 3px solid rgba(11,95,255,.25);
+      outline-offset: 2px;
+    }
+
+  
+  </style>
+</head>
+<body>
+<header class="topbar">
+    <nav class="nav" aria-label="Primary">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M7 12a5 5 0 0 1 10 0" stroke="#0b5fff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M5 12a7 7 0 0 1 14 0" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 12v6" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="20" r="1.2" fill="#0f172a"/>
+          </svg>
+        </div>
+        <span>Versioning &amp; Anchoring</span>
+      </div>
+
+      <div class="navlinks" role="navigation" aria-label="Site">
+        <a href="index.html" class="">Home</a>
+        <a href="rules.html" class="">Rules</a>
+        <a href="manifest.html" class="">Manifest</a>
+        <a href="verify.html" class="">Verify</a>
+        <a href="registry.html" class="active">Versioning System</a>
+        <a href="definitions.html" class="">Definitions</a>
+        <a href="quiz.html" class="">Quiz</a>
+      </div>
+
+      <div class="navcta">
+        <a class="btn" href="index.html#guide">Guided flow</a>
+        <a class="btn primary" href="index.html#demo">Try the demo</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>Versioning &amp; Anchoring Registry</h1>
+<div class="note" style="margin-top:12px;">
+      <strong>Status:</strong> Draft v0.1.0 • Demo registry rows only (mock data).
+    </div>
+<div class="statusline" aria-label="Status">
+      <span class="pill"><strong>Draft</strong> v0.1.0</span>
+      <span class="pill">Scope: deterministic commitment + release manifests</span>
+      <span class="pill">Anchoring infrastructure: not included</span>
+    </div>
+
+    <p class="lead">A visual list of anchored releases grouped by software name (static mockup).</p>
+
+    <div class="grid" aria-label="Anchored versions list">
+      <section class="panel span12" aria-label="Registry list">
+        <h2>Registry (mock data)</h2>
+        <p class="small">Replace these rows with your real anchored versions later. This page is just to preview the look.</p>
+
+        <div style="display:grid; gap:14px; margin-top:12px;">
+          
+          <div class="card">
+            <div class="pill" style="margin-bottom:10px;"><span class="dot good" aria-hidden="true"></span><strong>Versioning System</strong></div>
+            <table role="table" aria-label="Versioning System versions">
+              <thead>
+                <tr>
+                  <th style="width:140px;">Version</th>
+                  <th style="width:170px;">Date (UTC)</th>
+                  <th style="width:140px;">Network</th>
+                  <th>Tx / Proof</th>
+                  <th style="width:220px;">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="mono">0.5.0</td>
+                  <td class="mono">2026-02-15</td>
+                  <td class="mono">VeChain</td>
+                  <td class="mono">0xABC123…</td>
+                  <td>Uniform navigation release</td>
+                </tr>
+                <tr>
+                  <td class="mono">0.6.0</td>
+                  <td class="mono">2026-03-01</td>
+                  <td class="mono">Flare</td>
+                  <td class="mono">0xDEF456…</td>
+                  <td>Registry page added</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="pill" style="margin-bottom:10px;"><span class="dot" aria-hidden="true"></span><strong>Evidence Ledger</strong></div>
+            <table role="table" aria-label="Evidence Ledger versions">
+              <thead>
+                <tr>
+                  <th style="width:140px;">Version</th>
+                  <th style="width:170px;">Date (UTC)</th>
+                  <th style="width:140px;">Network</th>
+                  <th>Tx / Proof</th>
+                  <th style="width:220px;">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="mono">0.3.2</td>
+                  <td class="mono">2026-01-20</td>
+                  <td class="mono">VeChain</td>
+                  <td class="mono">0x789XYZ…</td>
+                  <td>Schema stabilization</td>
+                </tr>
+                <tr>
+                  <td class="mono">0.4.0</td>
+                  <td class="mono">2026-02-10</td>
+                  <td class="mono">Ethereum</td>
+                  <td class="mono">0x456LMN…</td>
+                  <td>Manifest canonicalization</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="pill" style="margin-bottom:10px;"><span class="dot good" aria-hidden="true"></span><strong>Tool Inventory</strong></div>
+            <table role="table" aria-label="Tool Inventory versions">
+              <thead>
+                <tr>
+                  <th style="width:140px;">Version</th>
+                  <th style="width:170px;">Date (UTC)</th>
+                  <th style="width:140px;">Network</th>
+                  <th>Tx / Proof</th>
+                  <th style="width:220px;">Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="mono">1.0.0</td>
+                  <td class="mono">2026-02-05</td>
+                  <td class="mono">Flare</td>
+                  <td class="mono">0xAAA111…</td>
+                  <td>First stable release</td>
+                </tr>
+                <tr>
+                  <td class="mono">1.1.0</td>
+                  <td class="mono">2026-02-18</td>
+                  <td class="mono">Flare</td>
+                  <td class="mono">0xBBB222…</td>
+                  <td>Serial verification logic</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+    <footer class="foot" aria-label="Footer">
+      <div>
+        <strong>Versioning &amp; Anchoring</strong><br/>
+        <span class="small">Static registry mockup</span>
+      </div>
+      <div>
+        <a href="index.html">Home</a>
+      </div>
+    </footer>
+  </main>
+
+</body>
+</html>

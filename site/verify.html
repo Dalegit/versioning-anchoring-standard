@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Versioning & Anchoring Standard — How to Verify</title>
+  <meta name="description" content="How to independently verify a release: canonicalization, SHA-256 hashing, and on-chain anchor verification." />
+  <meta name="theme-color" content="#0b5fff" />
+  <style>
+    :root{--bg:#ffffff;--fg:#0f172a;--muted:#475569;--muted2:#64748b;--line:#e2e8f0;--card:#f8fafc;--accent:#0b5fff;--accent2:#2563eb;--shadow:0 10px 30px rgba(2,6,23,.08);--radius:18px;--mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;--sans:ui-sans-serif, system-ui,-apple-system, Segoe UI, Roboto, Helvetica, Arial,"Apple Color Emoji","Segoe UI Emoji";--max:1120px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:var(--sans);color:var(--fg);background:var(--bg);line-height:1.55;}
+    a{color:inherit;text-decoration:none} a:hover{text-decoration:underline}
+    .topbar{position:sticky;top:0;background:rgba(255,255,255,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:50;}
+    .nav{max-width:var(--max);margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2px;}
+    .mark{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;background:linear-gradient(180deg,#fff,#f1f5f9);}
+    .navlinks{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .navlinks a{font-size:14px;color:var(--muted);padding:8px 10px;border-radius:12px;}
+    .navlinks a:hover{background:var(--card);text-decoration:none;color:var(--fg)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:14px;padding:11px 14px;font-weight:700;border:1px solid var(--line);background:#fff;transition:transform .05s ease, background .2s ease;}
+    .btn:hover{background:var(--card);text-decoration:none} .btn:active{transform:translateY(1px)}
+    .btn.primary{background:var(--accent);color:#fff;border-color:transparent} .btn.primary:hover{background:var(--accent2)}
+    .wrap{max-width:var(--max);margin:0 auto;padding:26px 24px 34px}
+    h1{margin:14px 0 10px;font-size:40px;letter-spacing:-.8px;line-height:1.08;}
+    @media (max-width:560px){h1{font-size:34px}}
+    .lead{margin:0 0 18px;color:var(--muted);font-size:16px;max-width:78ch;}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:18px;}
+    .panel{border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+    .panel h2{margin:0 0 8px;font-size:16px}
+    .panel p{margin:0 0 10px;color:var(--muted);font-size:14px}
+    .card{border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:18px;}
+    .card h3{margin:0 0 8px;font-size:15px}
+    .card ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px}
+    .card li{margin:6px 0}
+    .span7{grid-column:span 7} .span5{grid-column:span 5} .span12{grid-column:span 12}
+    @media (max-width:900px){.span7,.span5{grid-column:span 12}}
+    .divider{margin:22px 0;border-top:1px solid var(--line)}
+    pre{margin:0;font-family:var(--mono);font-size:13px;line-height:1.45;white-space:pre-wrap;color:#111827;}
+    code{font-family:var(--mono);font-size:13px;background:#f1f5f9;border:1px solid var(--line);padding:2px 6px;border-radius:10px;}
+    .small{font-size:13px;color:var(--muted)}
+  
+    /* --- Consistent site nav --- */
+    .navcta{display:flex; gap:10px; flex-wrap:wrap}
+    .navlinks a.active{
+      background: var(--card);
+      color: var(--fg);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .navlinks a:focus-visible,
+    .btn:focus-visible{
+      outline: 3px solid rgba(11,95,255,.25);
+      outline-offset: 2px;
+    }
+
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <nav class="nav" aria-label="Primary">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M7 12a5 5 0 0 1 10 0" stroke="#0b5fff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M5 12a7 7 0 0 1 14 0" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 12v6" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="20" r="1.2" fill="#0f172a"/>
+          </svg>
+        </div>
+        <span>Versioning &amp; Anchoring</span>
+      </div>
+
+      <div class="navlinks" role="navigation" aria-label="Site">
+        <a href="index.html" class="">Home</a>
+        <a href="rules.html" class="">Rules</a>
+        <a href="manifest.html" class="">Manifest</a>
+        <a href="verify.html" class="active">Verify</a>
+        <a href="registry.html" class="">Versioning System</a>
+        <a href="definitions.html" class="">Definitions</a>
+        <a href="quiz.html" class="">Quiz</a>
+      </div>
+
+      <div class="navcta">
+        <a class="btn" href="index.html#guide">Guided flow</a>
+        <a class="btn primary" href="index.html#demo">Try the demo</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>How to Verify a Release</h1>
+<div class="statusline" aria-label="Status">
+      <span class="pill"><strong>Draft</strong> v0.1.0</span>
+      <span class="pill">Scope: deterministic commitment + release manifests</span>
+      <span class="pill">Anchoring infrastructure: not included</span>
+    </div>
+
+    <p class="lead">
+      Verification should be possible with only the release manifest JSON and a SHA-256 tool.
+      No trust assumptions. No “just believe the maintainer”.
+    </p>
+<div class="note">
+        <strong>Reminder:</strong> Verification is deterministic: canonicalize the manifest bytes, hash with SHA-256, then compare.
+        Chain anchoring checks are optional and outside the scope of v0.1.0.
+      </div>
+
+    <div class="grid" aria-label="Verification layout">
+      <section class="panel span7" id="steps" aria-label="Verification steps">
+        <h2>Verification Steps</h2>
+        <p class="small">This verifies integrity (exact bytes) and, if anchored, public chronology.</p>
+
+<pre>
+1) Obtain the release manifest JSON
+   - Download from the registry/release bundle.
+
+2) Confirm canonicalization rules are applied
+   - UTF-8 encoding
+   - Keys sorted lexicographically (recursive)
+   - Stable formatting (no meaningless whitespace churn)
+   - LF line endings
+   - Trailing newline policy consistent
+
+3) Compute the manifest hash
+   - Compute: SHA-256(canonical manifest bytes)
+   - Result is: manifestSha256
+
+4) Compare against the published registry value
+   - Your computed manifestSha256 MUST match the registry's manifestSha256.
+
+5) (Optional) Verify on-chain anchor
+   - Locate the anchor TxID in a block explorer.
+   - Confirm the anchored value equals manifestSha256.
+   - Record block number and timestamp for chronology.
+</pre>
+      </section>
+
+      <aside class="card span5" id="failure" aria-label="Common failure modes">
+        <h3>Common failure modes</h3>
+        <ul>
+          <li>Different key ordering (non-canonical JSON).</li>
+          <li>Whitespace or indentation changes that alter bytes.</li>
+          <li>CRLF vs LF line endings.</li>
+          <li>Accidentally hashing the artifact file instead of the manifest.</li>
+          <li>Editing the manifest after anchoring (invalidates the anchor claim).</li>
+        </ul>
+
+        <div class="divider"></div>
+
+        <p class="small">
+          If hashes don’t match, assume the bytes aren’t the same. That’s the point.
+        </p>
+      </aside>
+
+      <section class="panel span12" id="anchor" aria-label="Anchor verification detail">
+        <h2>Anchor Verification Detail</h2>
+        <p class="small">Anchoring writes only the manifest hash on-chain. Blockchain metadata stays out of the manifest.</p>
+
+<pre>
+Anchor checks:
+- Confirm the on-chain transaction payload contains the exact manifestSha256.
+- Confirm the block number recorded in the registry is correct.
+- Confirm the block timestamp is consistent with the release timeline.
+
+Rules reminder:
+- Only the manifest hash is anchored.
+- TxID / block number / timestamp MUST NOT be inserted back into the original manifest JSON.
+- Anchor metadata belongs in the registry entry (or a separate anchor record).
+</pre>
+      </section>
+    </div>
+
+    <footer class="foot" aria-label="Footer" style="margin-top:28px;padding-top:18px;border-top:1px solid var(--line);display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;color:var(--muted);font-size:13px;">
+      <div>
+        <strong>Versioning & Anchoring Standard</strong><br/>
+        <span class="small">Verification documentation • Static page</span>
+      </div>
+      <div>
+        <a href="manifest.html" style="color:var(--accent);font-weight:700;text-decoration:none">Manifest</a> •
+        <a href="rules.html" style="color:var(--accent);font-weight:700;text-decoration:none">Rules</a> •
+        <a href="index.html" style="color:var(--accent);font-weight:700;text-decoration:none">Home</a>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{
+  "artifacts": [
+    {
+      "path": "index.html",
+      "sha256": ""
+    },
+    {
+      "path": "rules.html",
+      "sha256": ""
+    },
+    {
+      "path": "manifest.html",
+      "sha256": ""
+    },
+    {
+      "path": "verify.html",
+      "sha256": ""
+    },
+    {
+      "path": "definitions.html",
+      "sha256": ""
+    },
+    {
+      "path": "quiz.html",
+      "sha256": ""
+    }
+  ],
+  "release": {
+    "name": "Evidence Ledger Site",
+    "releasedAtUtc": "2026-02-20T00:00:00Z",
+    "version": "0.1.0"
+  },
+  "schemaVersion": "0.1.0"
+}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "0.1.0",
+  "release": {
+    "name": "Versioning Standard",
+    "version": "0.1.0",
+    "releasedAtUtc": "2026-02-22T07:15:00Z"
+  },
+  "artifacts": [
+    {
+      "path": "b.html",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "path": "a.html",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ]
+}

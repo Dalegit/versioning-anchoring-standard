@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Versioning & Anchoring Standard — Manifest Format</title>
+  <meta name="description" content="Release manifest structure, required fields, recommended fields, and determinism notes." />
+  <meta name="theme-color" content="#0b5fff" />
+  <style>
+    :root{--bg:#ffffff;--fg:#0f172a;--muted:#475569;--muted2:#64748b;--line:#e2e8f0;--card:#f8fafc;--accent:#0b5fff;--accent2:#2563eb;--shadow:0 10px 30px rgba(2,6,23,.08);--radius:18px;--mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;--sans:ui-sans-serif, system-ui,-apple-system, Segoe UI, Roboto, Helvetica, Arial,"Apple Color Emoji","Segoe UI Emoji";--max:1120px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:var(--sans);color:var(--fg);background:var(--bg);line-height:1.55;}
+    a{color:inherit;text-decoration:none} a:hover{text-decoration:underline}
+    .topbar{position:sticky;top:0;background:rgba(255,255,255,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:50;}
+    .nav{max-width:var(--max);margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.2px;}
+    .mark{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;background:linear-gradient(180deg,#fff,#f1f5f9);}
+    .navlinks{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .navlinks a{font-size:14px;color:var(--muted);padding:8px 10px;border-radius:12px;}
+    .navlinks a:hover{background:var(--card);text-decoration:none;color:var(--fg)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:14px;padding:11px 14px;font-weight:700;border:1px solid var(--line);background:#fff;transition:transform .05s ease, background .2s ease;}
+    .btn:hover{background:var(--card);text-decoration:none} .btn:active{transform:translateY(1px)}
+    .btn.primary{background:var(--accent);color:#fff;border-color:transparent} .btn.primary:hover{background:var(--accent2)}
+    .wrap{max-width:var(--max);margin:0 auto;padding:26px 24px 34px}
+    h1{margin:14px 0 10px;font-size:40px;letter-spacing:-.8px;line-height:1.08;}
+    @media (max-width:560px){h1{font-size:34px}}
+    .lead{margin:0 0 18px;color:var(--muted);font-size:16px;max-width:78ch;}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-top:18px;}
+    .panel{border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+    .panel h2{margin:0 0 8px;font-size:16px}
+    .panel p{margin:0 0 10px;color:var(--muted);font-size:14px}
+    .card{border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:18px;}
+    .card h3{margin:0 0 8px;font-size:15px}
+    .card ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px}
+    .card li{margin:6px 0}
+    .span7{grid-column:span 7} .span5{grid-column:span 5} .span12{grid-column:span 12}
+    @media (max-width:900px){.span7,.span5{grid-column:span 12}}
+    .divider{margin:22px 0;border-top:1px solid var(--line)}
+    pre{margin:0;font-family:var(--mono);font-size:13px;line-height:1.45;white-space:pre-wrap;color:#111827;}
+    code{font-family:var(--mono);font-size:13px;background:#f1f5f9;border:1px solid var(--line);padding:2px 6px;border-radius:10px;}
+    .small{font-size:13px;color:var(--muted)}
+  
+    /* --- Consistent site nav --- */
+    .navcta{display:flex; gap:10px; flex-wrap:wrap}
+    .navlinks a.active{
+      background: var(--card);
+      color: var(--fg);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .navlinks a:focus-visible,
+    .btn:focus-visible{
+      outline: 3px solid rgba(11,95,255,.25);
+      outline-offset: 2px;
+    }
+
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <nav class="nav" aria-label="Primary">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M7 12a5 5 0 0 1 10 0" stroke="#0b5fff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M5 12a7 7 0 0 1 14 0" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 12v6" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="20" r="1.2" fill="#0f172a"/>
+          </svg>
+        </div>
+        <span>Versioning &amp; Anchoring</span>
+      </div>
+
+      <div class="navlinks" role="navigation" aria-label="Site">
+        <a href="index.html" class="">Home</a>
+        <a href="rules.html" class="">Rules</a>
+        <a href="manifest.html" class="active">Manifest</a>
+        <a href="verify.html" class="">Verify</a>
+        <a href="registry.html" class="">Versioning System</a>
+        <a href="definitions.html" class="">Definitions</a>
+        <a href="quiz.html" class="">Quiz</a>
+      </div>
+
+      <div class="navcta">
+        <a class="btn" href="index.html#guide">Guided flow</a>
+        <a class="btn primary" href="index.html#demo">Try the demo</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>Release Manifest Format</h1>
+<div class="statusline" aria-label="Status">
+      <span class="pill"><strong>Draft</strong> v0.1.0</span>
+      <span class="pill">Scope: deterministic commitment + release manifests</span>
+      <span class="pill">Anchoring infrastructure: not included</span>
+    </div>
+
+    <p class="lead">
+      The release manifest is the canonical JSON document you hash and (optionally) anchor.
+      Its bytes must be deterministic under the canonicalization rules.
+    </p>
+<div class="note">
+        <strong>Scope note:</strong> The manifest defines what is hashed and verified. Anchoring receipts (TxIDs, timestamps, etc.) MUST be stored outside the manifest (e.g., in a registry log or release notes).
+      </div>
+
+    <div class="grid" aria-label="Manifest format layout">
+      <section class="panel span7" id="structure" aria-label="Example structure">
+        <h2>Example (baseline structure)</h2>
+        <p class="small">This is the conceptual shape described by the system overview.</p>
+<pre>{
+  "schemaVersion": "1.0",
+  "release": {
+    "name": "Project / Standard Name",
+    "version": "1.0.0",
+    "releasedAtUtc": "2026-02-11T00:00:00Z"
+  },
+  "artifacts": {
+    "schemas": [
+      { "id": "example.schema", "version": "1.0", "sha256": "..." }
+    ],
+    "documentation": [
+      { "id": "canonicalization_rules", "sha256": "..." }
+    ]
+  }
+}</pre>
+      </section>
+
+      <aside class="card span5" aria-label="Canonicalization reminder">
+        <h3>Determinism reminder</h3>
+        <ul>
+          <li>UTF-8 encoded JSON</li>
+          <li>Keys sorted lexicographically (recursive)</li>
+          <li>Stable formatting</li>
+          <li>Normalized line endings (LF recommended)</li>
+          <li>No trailing newline unless defined</li>
+        </ul>
+        <div class="divider"></div>
+        <p class="small">
+          The manifest is hashed after canonicalization. If your bytes differ, your hash differs.
+        </p>
+      </aside>
+
+      <section class="panel span12" id="required" aria-label="Required fields">
+        <h2>Required fields</h2>
+        <p class="small">These fields are required to make the manifest meaningful and verifiable.</p>
+<pre>
+REQUIRED: schemaVersion
+- String identifying the manifest schema version (e.g., "1.0").
+- If the manifest structure changes, schemaVersion MUST be updated and versioned.
+
+REQUIRED: release.name
+- Human-readable name of the project/standard/protocol being released.
+
+REQUIRED: release.version
+- MUST follow SemVer: MAJOR.MINOR.PATCH
+- MUST be unique and never reused.
+
+REQUIRED: release.releasedAtUtc
+- MUST be UTC in ISO 8601 format.
+- Used for registry display and chronology expectations.
+- The blockchain anchor may be later than this time, but should not contradict it.
+
+REQUIRED: artifacts
+- MUST include the release artifacts to which this release refers.
+
+REQUIRED: artifacts.schemas (if schemas are part of the release bundle)
+- List of schema artifacts included in the release.
+- Each entry SHOULD include stable identifiers and SHA-256 hashes.
+
+REQUIRED: artifacts.documentation (if docs are part of the release bundle)
+- List of documentation artifacts included in the release.
+- Each entry SHOULD include stable identifiers and SHA-256 hashes.
+</pre>
+      </section>
+
+      <section class="panel span12" id="recommended" aria-label="Recommended fields">
+        <h2>Recommended fields (non-breaking additions)</h2>
+        <p class="small">
+          These fields are not mandated by the overview, but are consistent with the discipline:
+          they improve verification without changing the core rules.
+        </p>
+<pre>
+RECOMMENDED: release.notes
+- Short description of what changed and why.
+
+RECOMMENDED: artifacts[*].sha256
+- SHA-256 hashes for each artifact file.
+- This is separate from the manifest hash. The manifest hash commits to the list and the artifact hashes.
+
+RECOMMENDED: source.repository and source.gitCommit
+- If source-controlled, include repository reference and commit.
+- Useful for reproducibility (but not required for hashing discipline).
+
+RECOMMENDED: registryHints.deprecated
+- If a release is superseded, mark it deprecated in the registry (do not rewrite old releases).
+</pre>
+      </section>
+    </div>
+
+    <footer class="foot" aria-label="Footer" style="margin-top:28px;padding-top:18px;border-top:1px solid var(--line);display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;color:var(--muted);font-size:13px;">
+      <div>
+        <strong>Versioning & Anchoring Standard</strong><br/>
+        <span class="small">Manifest documentation • Static page</span>
+      </div>
+      <div>
+        <a href="rules.html" style="color:var(--accent);font-weight:700;text-decoration:none">Rules</a> •
+        <a href="verify.html" style="color:var(--accent);font-weight:700;text-decoration:none">Verify</a> •
+        <a href="index.html" style="color:var(--accent);font-weight:700;text-decoration:none">Home</a>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,1160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Versioning & Anchoring — Guided Release Flow (Working Demo)</title>
+  <meta name="description" content="Guided release flow + working release manifest hashing demo (anchoring stub optional)." />
+  <meta name="theme-color" content="#0b5fff" />
+  <style>
+    :root{
+      --bg:#ffffff;
+      --fg:#0f172a;
+      --muted:#475569;
+      --muted2:#64748b;
+      --line:#e2e8f0;
+      --card:#f8fafc;
+      --accent:#0b5fff;
+      --accent2:#2563eb;
+      --shadow: 0 10px 30px rgba(2, 6, 23, .08);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --max: 1120px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--fg);
+      background:var(--bg);
+      line-height:1.55;
+    }
+    a{color:inherit; text-decoration:none}
+    a:hover{text-decoration:underline}
+    .topbar{
+      position:sticky; top:0;
+      background:rgba(255,255,255,.86);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+      z-index:50;
+    }
+    .nav{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:14px 24px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      font-weight:800; letter-spacing:.2px;
+    }
+    .mark{
+      width:34px; height:34px; border-radius:10px;
+      border:1px solid var(--line);
+      display:grid; place-items:center;
+      background:linear-gradient(180deg, #fff, #f1f5f9);
+    }
+    .navlinks{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .navlinks a{
+      font-size:14px; color:var(--muted);
+      padding:8px 10px; border-radius:12px;
+    }
+    .navlinks a:hover{background:var(--card); text-decoration:none; color:var(--fg)}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      border-radius:14px; padding:11px 14px;
+      font-weight:700; border:1px solid var(--line);
+      background:#fff;
+      transition: transform .05s ease, background .2s ease;
+      cursor:pointer;
+    }
+    .btn:hover{background:var(--card); text-decoration:none}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{background:var(--accent); color:#fff; border-color:transparent}
+    .btn.primary:hover{background:var(--accent2)}
+    .wrap{max-width:var(--max); margin:0 auto; padding:26px 24px 34px}
+    h1{
+      margin:14px 0 10px;
+      font-size:40px;
+      letter-spacing:-.8px;
+      line-height:1.08;
+    }
+    @media (max-width: 560px){ h1{font-size:34px} }
+    .lead{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size:16px;
+      max-width: 80ch;
+    }
+    .statusline{display:flex; gap:10px; flex-wrap:wrap; margin:10px 0 18px}
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:16px;
+      margin-top:18px;
+    }
+    .panel{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius: var(--radius);
+      padding:18px;
+      box-shadow: var(--shadow);
+    }
+    .panel h2{margin:0 0 8px; font-size:16px}
+    .panel p{margin:0 0 10px; color:var(--muted); font-size:14px}
+    .card{
+      border:1px solid var(--line);
+      background:var(--card);
+      border-radius: var(--radius);
+      padding:18px;
+    }
+    .card h3{margin:0 0 8px; font-size:15px}
+    .card ul{margin:0; padding-left:18px; color:var(--muted); font-size:14px}
+    .card li{margin:6px 0}
+    .span7{grid-column: span 7}
+    .span5{grid-column: span 5}
+    .span12{grid-column: span 12}
+    @media (max-width: 900px){
+      .span7, .span5{grid-column: span 12}
+    }
+    .divider{margin:22px 0; border-top:1px solid var(--line)}
+    .mono{font-family:var(--mono); font-size:13px; overflow-wrap:anywhere}
+    code{
+      font-family:var(--mono);
+      font-size:13px;
+      background:#f1f5f9;
+      border:1px solid var(--line);
+      padding:2px 6px;
+      border-radius:10px;
+    }
+    pre{
+      margin:0;
+      font-family:var(--mono);
+      font-size:13px;
+      line-height:1.45;
+      white-space:pre-wrap;
+      color:#111827;
+    }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background:#fff;
+    }
+    thead th{
+      text-align:left;
+      font-size:12px;
+      color:var(--muted2);
+      padding:12px 12px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg, #fff, #f8fafc);
+      letter-spacing:.2px;
+    }
+    tbody td{
+      padding:12px 12px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+      font-size:14px;
+    }
+    tbody tr:last-child td{border-bottom:none}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .dot{width:8px; height:8px; border-radius:999px; background:#b45309}
+    .dot.good{background:#16a34a}
+    .dot.bad{background:#dc2626}
+    .kvs{display:grid; grid-template-columns:1fr; gap:10px; margin-top:10px;}
+    .kv{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      background:linear-gradient(180deg, #fff, #f8fafc);
+    }
+    .k{font-size:12px; color:var(--muted2); margin-bottom:6px}
+    .v{font-family:var(--mono); font-size:13px; overflow-wrap:anywhere}
+    .step{
+      display:flex; gap:12px; align-items:flex-start;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background:#fff;
+      padding:14px;
+    }
+    .badge{
+      width:28px; height:28px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, #fff, #f8fafc);
+      display:grid; place-items:center;
+      font-weight:800;
+      color:#0f172a;
+      flex:0 0 auto;
+    }
+    .step h3{margin:0; font-size:14px}
+    .step p{margin:6px 0 0; color:var(--muted); font-size:13px}
+    .step .actions{margin-top:10px; display:flex; gap:10px; flex-wrap:wrap}
+    .input, textarea, select{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:14px;
+      background:#fff;
+      color:var(--fg);
+      outline:none;
+    }
+    textarea{min-height:140px; resize:vertical}
+    .hint{font-size:12px; color:var(--muted2); margin-top:6px}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+    @media (max-width: 820px){ .row{grid-template-columns: 1fr} }
+
+    .foot{
+      margin-top:28px;
+      padding-top:18px;
+      border-top:1px solid var(--line);
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .foot a{color:var(--accent); font-weight:700; text-decoration:none}
+    .foot a:hover{text-decoration:underline}
+
+    .navlinks a.active{
+      background: var(--card);
+      color: var(--fg);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .navlinks a:focus-visible,
+    .btn:focus-visible{
+      outline: 3px solid rgba(11,95,255,.25);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <nav class="nav" aria-label="Primary">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M7 12a5 5 0 0 1 10 0" stroke="#0b5fff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M5 12a7 7 0 0 1 14 0" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 12v6" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="20" r="1.2" fill="#0f172a"/>
+          </svg>
+        </div>
+        <span>Versioning &amp; Anchoring</span>
+      </div>
+
+      <div class="navlinks" role="navigation" aria-label="Site">
+        <a href="index.html" class="active">Home</a>
+        <a href="rules.html">Rules</a>
+        <a href="manifest.html">Manifest</a>
+        <a href="verify.html">Verify</a>
+        <a href="definitions.html">Definitions</a>
+        <a href="quiz.html">Quiz</a>
+        <a href="registry.html">Versioning System</a>
+      </div>
+
+      <div class="navcta">
+        <a class="btn" href="#guide">Guided flow</a>
+        <a class="btn primary" href="#demo">Try the demo</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <h1>Publish a verifiable release in 6 steps</h1>
+
+    <div class="statusline" aria-label="Status">
+      <span class="pill"><strong>Draft</strong> v0.1.0</span>
+      <span class="pill">Scope: deterministic commitment + release manifests</span>
+      <span class="pill">Anchoring infrastructure: not included</span>
+    </div>
+
+    <p class="lead">
+      This page explains the workflow and includes a working local demo: build a canonical manifest,
+      compute deterministic <strong>SHA-256</strong>, then (optionally) send only the manifest hash to a stub backend to simulate anchoring.
+      No private content on-chain. No magic. Just discipline (and a button).
+    </p>
+
+    <div class="grid" id="guide" aria-label="Guided flow">
+      <!-- Guided Flow -->
+      <section class="panel span7" aria-label="Guided release flow">
+        <h2>Guided Release Flow (do this in order)</h2>
+        <p class="small">
+          These are “what to do” steps. The demo below uses the official <span class="mono">v0.1.0</span> manifest schema.
+        </p>
+
+        <div style="display:grid; gap:12px; margin-top:12px">
+          <div class="step" id="step1">
+            <div class="badge">1</div>
+            <div>
+              <h3>Collect your Release Bundle (schemas + docs)</h3>
+              <p>Decide what exactly counts as this release. Keep it stable: the manifest is going to commit to it.</p>
+              <div class="actions">
+                <a class="btn" href="#manifest">See manifest structure</a>
+                <span class="pill"><span class="dot" aria-hidden="true"></span>Bundle not uploaded here</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step" id="step2">
+            <div class="badge">2</div>
+            <div>
+              <h3>Choose the version number (SemVer)</h3>
+              <p>Use <code>MAJOR.MINOR.PATCH</code>. Breaking change = MAJOR. New compatible feature = MINOR. Fix/clarification = PATCH.</p>
+              <div class="actions">
+                <a class="btn" href="rules.html#semver">Read SemVer rules</a>
+                <span class="pill">Example: <code>0.1.0</code></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step" id="step3">
+            <div class="badge">3</div>
+            <div>
+              <h3>Create the Release Manifest (JSON)</h3>
+              <p>The manifest is the authoritative description of the release. You hash the manifest, not your HTML page, not your feelings.</p>
+              <div class="actions">
+                <a class="btn" href="#manifest">Manifest example</a>
+                <a class="btn" href="#verify">Verification steps</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="step" id="step4">
+            <div class="badge">4</div>
+            <div>
+              <h3>Canonicalize the manifest (deterministic bytes)</h3>
+              <p>UTF-8. Keys sorted lexicographically. Stable formatting. Same content → same bytes → same hash.</p>
+              <div class="actions">
+                <a class="btn" href="rules.html#canonical">Canonicalization rules</a>
+                <span class="pill">Avoid “same JSON, different hash”</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step" id="step5">
+            <div class="badge">5</div>
+            <div>
+              <h3>Hash the canonical manifest (SHA-256)</h3>
+              <p>Compute: <code>SHA-256(canonical_manifest_bytes)</code> → <code>manifestSha256</code>. That hash is the anchor value.</p>
+              <div class="actions">
+                <span class="pill">Output: <code>manifestSha256</code></span>
+                <a class="btn" href="#demo">Try the hashing demo</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="step" id="step6">
+            <div class="badge">6</div>
+            <div>
+              <h3>Anchor and publish the registry entry</h3>
+              <p>Anchor only the hash. Keep TxID/block metadata out of the manifest. Publish Version • Hash • TxID in an append-only registry.</p>
+              <div class="actions">
+                <a class="btn primary" href="#registry">See registry (below)</a>
+                <span class="pill"><span class="dot good" aria-hidden="true"></span>Append-only history</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h2>Practical templates (copy/paste)</h2>
+        <p class="small">
+          These are templates you fill out in your own tools. The demo below generates canonical release manifests using the official <span class="mono">v0.1.0</span> schema.
+        </p>
+
+        <div class="kvs">
+          <div class="kv">
+            <div class="k">Release checklist</div>
+            <pre>
+[ ] Release bundle finalized
+[ ] Version chosen (SemVer)
+[ ] Manifest created (JSON)
+[ ] Manifest canonicalized
+[ ] SHA-256(manifest) computed => manifestSha256
+[ ] Anchored (hash only)
+[ ] Registry updated (append-only)
+            </pre>
+          </div>
+
+          <div class="kv">
+            <div class="k">Registry row template</div>
+            <pre>
+Release:          release.name@release.version
+Release date:     ISO 8601 (UTC)
+manifestSha256:   &lt;64 hex chars&gt;
+Anchor network:   &lt;VeChain / other&gt;
+TxID:             &lt;transaction id&gt;
+Status:           not_anchored | anchored | failed
+            </pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="card span5" aria-label="Quick explanation">
+        <h3>What this page is doing</h3>
+        <ul>
+          <li>A guided flow + a working release manifest hashing demo (anchoring is optional demo-only).</li>
+          <li>Shows exactly what gets hashed and what gets anchored.</li>
+          <li>Append-only discipline (don’t rewrite history).</li>
+          <li>Designed so companies can follow it step-by-step.</li>
+        </ul>
+
+        <div class="divider"></div>
+
+        <h3>What gets anchored?</h3>
+        <ul>
+          <li><strong>Only</strong> the SHA-256 of the canonical manifest.</li>
+          <li>No private content on-chain.</li>
+          <li>No TxID/block info inside the manifest.</li>
+        </ul>
+
+        <div class="divider"></div>
+
+        <h3>Backend status</h3>
+        <div class="kvs">
+          <div class="kv">
+            <div class="k">Connectivity</div>
+            <div class="v" id="backendStatus">
+              <span class="pill"><span class="dot" aria-hidden="true"></span>Not checked</span>
+            </div>
+          </div>
+          <div class="kv">
+            <div class="k">Last action</div>
+            <div class="v" id="lastAction">—</div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px">
+          <button class="btn" onclick="checkBackend()">Check backend</button>
+          <button class="btn" onclick="clearRegistry()">Clear local registry</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <a class="btn" href="rules.html">Rules</a>
+          <a class="btn" href="verify.html">Verify</a>
+          <a class="btn primary" href="manifest.html">Manifest</a>
+        </div>
+      </aside>
+
+      <!-- WORKING DEMO -->
+      <section class="panel span12" id="demo" aria-label="Official manifest demo">
+        <h2>Demo: Build the <span class="mono">v0.1.0</span> Canonical Manifest (official schema)</h2>
+        <div class="note" style="margin-top:12px;">
+          <strong>Non-negotiable:</strong> This demo uses the <em>official</em> canonical manifest structure:
+          <span class="mono">schemaVersion</span>, <span class="mono">release</span>, <span class="mono">artifacts</span>.
+          No “demo fields”. No creative reinterpretations.
+        </div>
+
+        <p class="small">
+          The manifest hash is computed from <code>canonicalJson(manifest)</code> using recursive key sorting and
+          <code>JSON.stringify(..., null, 2)</code>. The timestamp is manually set and becomes immutable once you “Release lock”.
+        </p>
+
+        <div class="row" style="margin-top:12px;">
+          <div>
+            <div class="k">Backend URL (optional)</div>
+            <input class="input mono" id="backendUrl" value="http://localhost:8787" />
+            <div class="hint">Optional local stub for <span class="mono">POST /api/anchor</span>. Not part of the standard.</div>
+          </div>
+          <div>
+            <div class="k">Network label (display)</div>
+            <input class="input" id="networkLabel" value="VeChain (stub)" />
+            <div class="hint">UI-only label for the registry row.</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <div>
+            <div class="k">Release name</div>
+            <input class="input mono" id="releaseName" value="Evidence Ledger Site" />
+            <div class="hint">Human name for the release.</div>
+          </div>
+          <div>
+            <div class="k">Release version</div>
+            <input class="input mono" id="releaseVersion" value="0.1.0" />
+            <div class="hint">SemVer string stored in <span class="mono">release.version</span>.</div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:12px;">
+          <div>
+            <div class="k">releasedAtUtc (manual)</div>
+            <input class="input mono" id="releasedAtUtc" placeholder="2026-02-20T00:00:00Z" value="2026-02-20T00:00:00Z"/>
+            <div class="hint">Set once. If you “Release lock”, this field becomes read-only.</div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+            <button class="btn" onclick="setNowUtc()">Set to now (UTC)</button>
+            <button class="btn primary" onclick="lockRelease()">Release lock</button>
+            <button class="btn" onclick="resetDemo()">Reset demo</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h3 style="margin:0 0 10px 0;">Artifacts</h3>
+        <p class="small" style="margin-top:0;">
+          Add the site files you’re releasing. For the demo, you can paste known SHA-256 values.
+          (Yes, in a real build pipeline you’d compute these from actual file bytes.)
+        </p>
+
+        <div class="tablewrap" style="margin-top:10px;">
+          <table class="tbl" aria-label="Artifacts table">
+            <thead>
+              <tr>
+                <th style="width:55%;">path</th>
+                <th style="width:40%;">sha256</th>
+                <th style="width:5%;"> </th>
+              </tr>
+            </thead>
+            <tbody id="artifactRows"></tbody>
+          </table>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+          <button class="btn" onclick="addArtifactRow()">Add artifact</button>
+          <button class="btn" onclick="buildOfficialManifest()">Build manifest</button>
+          <button class="btn" onclick="computeManifestHash()">Compute manifest hash</button>
+          <button class="btn primary" onclick="anchorManifestHash()">Anchor (backend)</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <div class="mono" style="min-width:280px;">
+            <div class="k">Canonical JSON</div>
+            <pre id="manifestOut" class="pre"></pre>
+          </div>
+          <div class="mono" style="min-width:280px;">
+            <div class="k">manifestSha256</div>
+            <pre id="manifestHashOut" class="pre"></pre>
+            <div class="hint" id="lockStateHint"></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h3 style="margin:0 0 10px 0;">Local registry (demo)</h3>
+        <p class="small" style="margin-top:0;">
+          UI-only convenience: we append release rows here after anchoring. This does not change the manifest.
+        </p>
+
+        <div class="tablewrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>release</th>
+                <th>manifestSha256</th>
+                <th>network</th>
+                <th>txid</th>
+                <th>releasedAtUtc</th>
+              </tr>
+            </thead>
+            <tbody id="registryRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Registry -->
+      <section class="panel span12" id="registry" aria-label="Registry">
+        <h2>Registry (local demo)</h2>
+        <p class="small">
+          This registry is stored in your browser (localStorage) so the demo feels “real.”
+          Your real public registry would live in your database and be append-only.
+        </p>
+
+        <table role="table" aria-label="Release registry table">
+          <thead>
+            <tr>
+              <th style="width: 260px;">Release</th>
+              <th style="width: 190px;">Released (UTC)</th>
+              <th>manifestSha256</th>
+              <th style="width: 320px;">Anchor (Network / TxID)</th>
+              <th style="width: 140px;">Status</th>
+            </tr>
+          </thead>
+          <tbody id="registryBody">
+            <tr>
+              <td colspan="5" class="mono" style="color:#64748b;">No entries yet. Use the demo above.</td>
+            </tr>
+          </tbody>
+        </table>
+<section class="panel span12" id="devtools" aria-label="Developer tools">
+  <h2>Developer Tools: Raw Manifest Canonicalization</h2>
+  <p class="small">
+    Paste any JSON manifest below to test canonicalization and SHA-256 hashing.
+    This does not affect the demo or the standard — it is a developer validation utility.
+  </p>
+
+  <div class="divider"></div>
+
+  <div class="row">
+    <div class="mono">
+      <div class="k">Raw JSON Input</div>
+      <textarea id="rawManifestInput" class="input mono" placeholder='Paste raw manifest JSON here'></textarea>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+    <button class="btn" id="canonicalizeRawBtn">Canonicalize & Hash</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="row">
+    <div class="mono">
+      <div class="k">Canonical Output</div>
+      <pre id="rawCanonicalOutput"></pre>
+    </div>
+    <div class="mono">
+      <div class="k">SHA-256 (canonical UTF-8)</div>
+      <pre id="rawCanonicalHash"></pre>
+    </div>
+  </div>
+</section>
+      </section>
+    </div>
+
+    <!-- How to verify -->
+    <section class="panel" id="verify" aria-label="How to verify" style="margin-top:18px;">
+      <h2>How to verify (high level)</h2>
+      <p class="small">
+        Verification should be possible with only the manifest JSON and a SHA-256 tool.
+      </p>
+
+      <div class="grid" style="margin-top:12px;">
+        <div class="card span7">
+<pre>
+1) Obtain the release manifest JSON.
+2) Canonicalize it (UTF-8, sorted keys, stable formatting).
+3) Compute: SHA-256(canonical manifest bytes) => manifestSha256
+4) Compare to the published manifestSha256 in the registry.
+5) If anchored: verify the anchor payload corresponds to manifestSha256 and confirm timestamps.
+</pre>
+        </div>
+
+        <div class="card span5">
+          <h3>Common failure modes</h3>
+          <ul>
+            <li>Whitespace / newline differences</li>
+            <li>Different key order (non-canonical JSON)</li>
+            <li>Hashing the wrong thing (artifact hash vs manifest hash)</li>
+            <li>Editing a manifest after anchoring</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px">
+        <a class="btn" href="verify.html">Full verification guide</a>
+        <a class="btn primary" href="#manifest">Manifest format</a>
+      </div>
+    </section>
+
+    <!-- Manifest format -->
+    <section class="panel" id="manifest" aria-label="Manifest format" style="margin-top:18px;">
+      <h2>Manifest format (example)</h2>
+      <p class="small">This is the canonical JSON document you hash (and optionally anchor the hash of).</p>
+
+      <div class="grid" style="margin-top:12px;">
+        <div class="card span7">
+<pre>{
+  "schemaVersion": "0.1.0",
+  "release": {
+    "name": "Evidence Ledger Site",
+    "version": "0.1.0",
+    "releasedAtUtc": "2026-02-20T00:00:00Z"
+  },
+  "artifacts": [
+    {
+      "path": "index.html",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}</pre>
+        </div>
+
+        <div class="card span5">
+          <h3>Canonical rules</h3>
+          <ul>
+            <li>UTF-8</li>
+            <li>Sorted keys (lexicographic, recursive)</li>
+            <li>Stable formatting (<code>JSON.stringify(..., null, 2)</code>)</li>
+            <li>Arrays preserve order</li>
+            <li>No trailing newline</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px">
+        <a class="btn" href="manifest.html">Full manifest spec</a>
+        <a class="btn primary" href="rules.html">Rules in detail</a>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="panel" id="about" aria-label="About" style="margin-top:18px;">
+      <h2>About</h2>
+      <p class="small">
+        This page combines public explanation + a working demo for building and hashing canonical release manifests.
+        The anchoring button is a demo-only stub and is not part of the <span class="mono">v0.1.0</span> standard.
+      </p>
+    </section>
+
+    <footer class="foot" aria-label="Footer">
+      <div>
+        <strong>Versioning & Anchoring</strong><br/>
+        <span class="small">Guided release flow • working demo</span>
+      </div>
+      <div>
+        <a href="#guide">Guided flow</a> •
+        <a href="#demo">Demo</a> •
+        <a href="#registry">Registry</a>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Single source of truth for canonicalization -->
+  <script src="canonical.js"></script>
+
+  <script>
+    // ---------- UI helpers ----------
+    function setLastAction(msg){
+      document.getElementById("lastAction").textContent = msg;
+    }
+
+    async function sha256HexUtf8(text){
+      const enc = new TextEncoder();
+      const bytes = enc.encode(text);
+      const hashBuf = await crypto.subtle.digest("SHA-256", bytes);
+      const hashArr = Array.from(new Uint8Array(hashBuf));
+      return hashArr.map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function shortHex(h){
+      if (!h) return "—";
+      const s = String(h);
+      return s.length > 18 ? (s.slice(0,8) + "…" + s.slice(-8)) : s;
+    }
+
+    function escapeAttr(s){
+      return String(s ?? "").replace(/"/g, "&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+
+    // ---------- Demo state (official schema) ----------
+    const DEMO_LOCK_KEY = "v010_demo_locked";
+    const DEMO_LOCK_SNAPSHOT_KEY = "v010_demo_snapshot";
+    const REGISTRY_KEY = "v010_demo_registry_rows";
+
+    let manifestObj = null;
+    let manifestCanonical = null;
+    let manifestSha256 = null;
+
+    function isLocked(){
+      return localStorage.getItem(DEMO_LOCK_KEY) === "1";
+    }
+
+    function setLocked(flag){
+      if(flag){
+        localStorage.setItem(DEMO_LOCK_KEY, "1");
+      } else {
+        localStorage.removeItem(DEMO_LOCK_KEY);
+      }
+      applyLockUi();
+    }
+
+    function applyLockUi(){
+      const locked = isLocked();
+      const ids = ["releaseName","releaseVersion","releasedAtUtc","backendUrl","networkLabel"];
+      ids.forEach(id=>{
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.disabled = locked && (id !== "backendUrl" && id !== "networkLabel"); // backend/network are UI-only
+      });
+
+      document.querySelectorAll("#artifactRows input").forEach(inp=>{ inp.disabled = locked; });
+      document.querySelectorAll("#artifactRows button[data-del]").forEach(btn=>{ btn.disabled = locked; });
+
+      const hint = document.getElementById("lockStateHint");
+      if(hint){
+        hint.textContent = locked
+          ? "Locked: release fields and artifacts are immutable in this demo until you Reset."
+          : "Unlocked: edit release fields and artifacts, then lock to simulate an immutable release.";
+      }
+    }
+
+    // ---------- Artifacts table ----------
+    function addArtifactRow(pathVal="", shaVal=""){
+      const tbody = document.getElementById("artifactRows");
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td><input class="input mono" value="${escapeAttr(pathVal)}" placeholder="index.html" /></td>
+        <td><input class="input mono" value="${escapeAttr(shaVal)}" placeholder="64-hex sha256..." /></td>
+        <td style="text-align:right;"><button class="btn" data-del="1" title="Remove">✕</button></td>
+      `;
+
+      tr.querySelector("button[data-del]").addEventListener("click", ()=>{
+        tr.remove();
+        persistSnapshotIfLocked();
+      });
+
+      tr.querySelectorAll("input").forEach(inp=>{
+        inp.addEventListener("input", ()=>persistSnapshotIfLocked());
+      });
+
+      tbody.appendChild(tr);
+      applyLockUi();
+      persistSnapshotIfLocked();
+    }
+
+    function getArtifactsFromUi(){
+      const rows = Array.from(document.querySelectorAll("#artifactRows tr"));
+      return rows.map(r=>{
+        const inputs = r.querySelectorAll("input");
+        return {
+          path: (inputs[0].value || "").trim(),
+          sha256: (inputs[1].value || "").trim()
+        };
+      }).filter(a=>a.path.length>0 || a.sha256.length>0);
+    }
+
+    // ---------- Release controls ----------
+    function setNowUtc(){
+      if(isLocked()) return;
+      document.getElementById("releasedAtUtc").value = new Date().toISOString();
+    }
+
+    function lockRelease(){
+      const name = document.getElementById("releaseName").value.trim();
+      const ver  = document.getElementById("releaseVersion").value.trim();
+      const ts   = document.getElementById("releasedAtUtc").value.trim();
+
+      if(!name || !ver || !ts){
+        alert("Release name, version, and releasedAtUtc are required before locking.");
+        return;
+      }
+
+      const snapshot = {
+        backendUrl: document.getElementById("backendUrl").value,
+        networkLabel: document.getElementById("networkLabel").value,
+        releaseName: name,
+        releaseVersion: ver,
+        releasedAtUtc: ts,
+        artifacts: getArtifactsFromUi()
+      };
+      localStorage.setItem(DEMO_LOCK_SNAPSHOT_KEY, JSON.stringify(snapshot));
+      setLocked(true);
+
+      setLastAction("Release locked (demo). Timestamp and artifacts are now immutable.");
+    }
+
+    function loadSnapshotIfLocked(){
+      if(!isLocked()) return;
+      const raw = localStorage.getItem(DEMO_LOCK_SNAPSHOT_KEY);
+      if(!raw) return;
+
+      try{
+        const snap = JSON.parse(raw);
+
+        document.getElementById("backendUrl").value = snap.backendUrl || "http://localhost:8787";
+        document.getElementById("networkLabel").value = snap.networkLabel || "VeChain (stub)";
+        document.getElementById("releaseName").value = snap.releaseName || "";
+        document.getElementById("releaseVersion").value = snap.releaseVersion || "";
+        document.getElementById("releasedAtUtc").value = snap.releasedAtUtc || "";
+
+        document.getElementById("artifactRows").innerHTML = "";
+        (snap.artifacts || []).forEach(a=>addArtifactRow(a.path || "", a.sha256 || ""));
+      } catch(e){
+        localStorage.removeItem(DEMO_LOCK_SNAPSHOT_KEY);
+        setLocked(false);
+      }
+    }
+
+    function persistSnapshotIfLocked(){
+      if(!isLocked()) return;
+      const raw = localStorage.getItem(DEMO_LOCK_SNAPSHOT_KEY);
+      if(!raw) return;
+      try{
+        const snap = JSON.parse(raw);
+        snap.artifacts = getArtifactsFromUi();
+        localStorage.setItem(DEMO_LOCK_SNAPSHOT_KEY, JSON.stringify(snap));
+      }catch(e){}
+    }
+
+    function resetDemo(){
+      localStorage.removeItem(DEMO_LOCK_KEY);
+      localStorage.removeItem(DEMO_LOCK_SNAPSHOT_KEY);
+
+      manifestObj = null;
+      manifestCanonical = null;
+      manifestSha256 = null;
+
+      document.getElementById("backendUrl").value = "http://localhost:8787";
+      document.getElementById("networkLabel").value = "VeChain (stub)";
+      document.getElementById("releaseName").value = "Evidence Ledger Site";
+      document.getElementById("releaseVersion").value = "0.1.0";
+      document.getElementById("releasedAtUtc").value = "2026-02-20T00:00:00Z";
+
+      document.getElementById("artifactRows").innerHTML = "";
+      addArtifactRow("index.html","");
+      addArtifactRow("rules.html","");
+      addArtifactRow("manifest.html","");
+      addArtifactRow("verify.html","");
+      addArtifactRow("definitions.html","");
+      addArtifactRow("quiz.html","");
+
+      document.getElementById("manifestOut").textContent = "";
+      document.getElementById("manifestHashOut").textContent = "—";
+
+      setLastAction("Demo reset.");
+      setLocked(false);
+    }
+
+    // ---------- Official manifest build ----------
+    function buildOfficialManifest(){
+      if(typeof canonicalJson !== "function"){
+        alert("canonical.js not loaded: canonicalJson() is missing.");
+        return;
+      }
+
+      const schemaVersion = "0.1.0";
+      const release = {
+        name: document.getElementById("releaseName").value.trim(),
+        version: document.getElementById("releaseVersion").value.trim(),
+        releasedAtUtc: document.getElementById("releasedAtUtc").value.trim()
+      };
+
+      const artifacts = getArtifactsFromUi().map(a=>({
+        path: a.path,
+        sha256: a.sha256
+      }));
+
+      manifestObj = { schemaVersion, release, artifacts };
+
+      manifestCanonical = canonicalJson(manifestObj);
+      document.getElementById("manifestOut").textContent = manifestCanonical;
+
+      setLastAction("Built official manifest (canonical JSON generated).");
+    }
+
+    async function computeManifestHash(){
+      if(!manifestObj){
+        buildOfficialManifest();
+        if(!manifestObj) return;
+      }
+      manifestCanonical = canonicalJson(manifestObj);
+      document.getElementById("manifestOut").textContent = manifestCanonical;
+
+      manifestSha256 = await sha256HexUtf8(manifestCanonical);
+      document.getElementById("manifestHashOut").textContent = manifestSha256;
+
+      setLastAction("Computed manifestSha256 from canonical JSON.");
+    }
+
+    // ---------- Anchoring (demo-only) ----------
+    function getRegistry(){
+      try{
+        return JSON.parse(localStorage.getItem(REGISTRY_KEY) || "[]");
+      }catch(e){
+        return [];
+      }
+    }
+
+    function setRegistry(rows){
+      localStorage.setItem(REGISTRY_KEY, JSON.stringify(rows));
+      renderRegistry();
+      renderRegistryTable();
+    }
+
+    function renderRegistry(){
+      const rows = getRegistry();
+      const tbody = document.getElementById("registryRows");
+      if(!tbody) return;
+
+      tbody.innerHTML = rows.map(r=>{
+        return `
+          <tr>
+            <td>${escapeHtml((r.releaseName || "—") + " " + (r.releaseVersion || ""))}</td>
+            <td class="mono">${escapeHtml(r.manifestSha256 || "—")}</td>
+            <td>${escapeHtml(r.networkLabel || "—")}</td>
+            <td class="mono">${escapeHtml(r.txid || "—")}</td>
+            <td class="mono">${escapeHtml(r.releasedAtUtc || "—")}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderRegistryTable(){
+      const rows = getRegistry();
+      const tbody = document.getElementById("registryBody");
+      if(!tbody) return;
+
+      if(rows.length === 0){
+        tbody.innerHTML = `<tr><td colspan="5" class="mono" style="color:#64748b;">No entries yet. Use the demo above.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = rows.map(r=>{
+        const rel = escapeHtml((r.releaseName || "—") + "@" + (r.releaseVersion || "—"));
+        const when = escapeHtml(r.releasedAtUtc || "—");
+        const mh = escapeHtml(r.manifestSha256 || "—");
+        const anchor = escapeHtml((r.networkLabel || "—") + " / " + (r.txid || "—"));
+        const status = (r.txid && r.txid !== "—" && !String(r.txid).includes("error") && !String(r.txid).includes("unreachable"))
+          ? "anchored"
+          : "not_anchored";
+
+        return `
+          <tr>
+            <td>${rel}</td>
+            <td class="mono">${when}</td>
+            <td class="mono">${mh}</td>
+            <td class="mono">${anchor}</td>
+            <td><span class="pill"><span class="dot ${status==="anchored"?"good":"bad"}" aria-hidden="true"></span>${status}</span></td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function anchorManifestHash(){
+      if(!manifestSha256){
+        await computeManifestHash();
+        if(!manifestSha256) return;
+      }
+
+      const backendUrl = document.getElementById("backendUrl").value.trim().replace(/\/+$/,"");
+      const networkLabel = document.getElementById("networkLabel").value.trim();
+      const releaseName = document.getElementById("releaseName").value.trim();
+      const releaseVersion = document.getElementById("releaseVersion").value.trim();
+      const releasedAtUtc = document.getElementById("releasedAtUtc").value.trim();
+
+      let txid = "—";
+      try{
+        const res = await fetch(backendUrl + "/api/anchor", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({ manifestSha256 })
+        });
+        if(res.ok){
+          const data = await res.json();
+          txid = data.txid || data.txId || data.tx || "—";
+        } else {
+          txid = "backend_error";
+        }
+      }catch(e){
+        txid = "backend_unreachable";
+      }
+
+      const rows = getRegistry();
+      rows.unshift({ releaseName, releaseVersion, releasedAtUtc, manifestSha256, networkLabel, txid });
+      setRegistry(rows);
+
+      setLastAction("Anchoring attempted (demo). Registry row appended. Manifest unchanged.");
+    }
+
+    async function checkBackend(){
+      const backendUrl = document.getElementById("backendUrl").value.trim().replace(/\/+$/,"");
+      const el = document.getElementById("backendStatus");
+      try{
+        const res = await fetch(backendUrl + "/health", { method: "GET" });
+        if(res.ok){
+          el.innerHTML = `<span class="pill"><span class="dot good" aria-hidden="true"></span>Reachable</span>`;
+          setLastAction("Backend reachable.");
+        } else {
+          el.innerHTML = `<span class="pill"><span class="dot bad" aria-hidden="true"></span>Error</span>`;
+          setLastAction("Backend responded with an error.");
+        }
+      }catch(e){
+        el.innerHTML = `<span class="pill"><span class="dot bad" aria-hidden="true"></span>Unreachable</span>`;
+        setLastAction("Backend unreachable.");
+      }
+    }
+
+    function clearRegistry(){
+      localStorage.removeItem(REGISTRY_KEY);
+      renderRegistry();
+      renderRegistryTable();
+      setLastAction("Local registry cleared.");
+    }
+
+    // ---------- Init ----------
+    (function initDemo(){
+      if(!isLocked()){
+        document.getElementById("artifactRows").innerHTML = "";
+        addArtifactRow("index.html","");
+        addArtifactRow("rules.html","");
+        addArtifactRow("manifest.html","");
+        addArtifactRow("verify.html","");
+        addArtifactRow("definitions.html","");
+        addArtifactRow("quiz.html","");
+      } else {
+        loadSnapshotIfLocked();
+      }
+
+      applyLockUi();
+      renderRegistry();
+      renderRegistryTable();
+    })();
+// ---------- Developer: Raw JSON Canonicalization ----------
+document.getElementById("canonicalizeRawBtn")?.addEventListener("click", async () => {
+  const inputEl = document.getElementById("rawManifestInput");
+  const canonicalOut = document.getElementById("rawCanonicalOutput");
+  const hashOut = document.getElementById("rawCanonicalHash");
+
+  try {
+    const parsed = JSON.parse(inputEl.value);
+
+    if (typeof canonicalJson !== "function") {
+      throw new Error("canonicalJson() not loaded.");
+    }
+
+    const canonical = canonicalJson(parsed);
+    canonicalOut.textContent = canonical;
+
+    const hash = await sha256HexUtf8(canonical);
+    hashOut.textContent = hash;
+
+  } catch (err) {
+    canonicalOut.textContent = "Invalid JSON: " + err.message;
+    hashOut.textContent = "";
+  }
+});
+  </script>
+</body>
+</html>

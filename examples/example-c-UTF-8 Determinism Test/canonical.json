@@ -1,0 +1,14 @@
+{
+  "artifacts": [
+    {
+      "path": "site/index.html",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    }
+  ],
+  "release": {
+    "name": "Versioning Standard Café",
+    "releasedAtUtc": "2026-02-22T07:15:00Z",
+    "version": "0.1.0"
+  },
+  "schemaVersion": "0.1.0"
+}
