@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Versioning &amp; Anchoring — Registry (Mockup)</title>
-  <meta name="description" content="Static visual mockup of anchored versions grouped by software." />
+  <title>Versioning & Anchoring Standard — Release Registry</title>
+  <meta name="description" content="Release registry for the Versioning & Anchoring Standard: manifests, SHA-256 hashes, timestamp receipts, and verification records." />
   <meta name="theme-color" content="#0b5fff" />
   <style>
 
@@ -286,129 +286,134 @@
   </header>
 
   <main class="wrap">
-    <h1>Versioning &amp; Anchoring Registry</h1>
-<div class="note" style="margin-top:12px;">
-      <strong>Status:</strong> Draft v0.1.0 • Demo registry rows only (mock data).
-    </div>
-<div class="statusline" aria-label="Status">
-      <span class="pill"><strong>Draft</strong> v0.1.0</span>
+    <h1>Versioning &amp; Anchoring Standard Release Registry</h1>
+
+    <div class="statusline" aria-label="Status">
+      <span class="pill"><strong>Current</strong> v0.1.0</span>
       <span class="pill">Scope: deterministic commitment + release manifests</span>
-      <span class="pill">Anchoring infrastructure: not included</span>
+      <span class="pill">Anchoring infrastructure: not included in v0.1.0</span>
     </div>
 
-    <p class="lead">A visual list of anchored releases grouped by software name (static mockup).</p>
+    <p class="lead">
+      This registry records releases of the <strong>Versioning &amp; Anchoring Standard</strong> itself.
+      It is not an application registry, scoring system, evidence service, prediction registry, identity layer,
+      or commercial product. Its purpose is to point to the standard’s release manifest, manifest hash,
+      and timestamp receipt so a release can be independently verified.
+    </p>
 
-    <div class="grid" aria-label="Anchored versions list">
+    <div class="grid" aria-label="Standard release registry">
       <section class="panel span12" aria-label="Registry list">
-        <h2>Registry (mock data)</h2>
-        <p class="small">Replace these rows with your real anchored versions later. This page is just to preview the look.</p>
+        <h2>Release registry</h2>
+        <p class="small">
+          Each row identifies a frozen standard release and the files needed to verify it.
+          Later documentation or site cleanup commits do not rewrite previous releases.
+        </p>
 
         <div style="display:grid; gap:14px; margin-top:12px;">
-          
           <div class="card">
-            <div class="pill" style="margin-bottom:10px;"><span class="dot good" aria-hidden="true"></span><strong>Versioning System</strong></div>
-            <table role="table" aria-label="Versioning System versions">
+            <div class="pill" style="margin-bottom:10px;">
+              <span class="dot good" aria-hidden="true"></span>
+              <strong>Versioning &amp; Anchoring Standard</strong>
+            </div>
+
+            <table role="table" aria-label="Versioning and Anchoring Standard releases">
               <thead>
                 <tr>
-                  <th style="width:140px;">Version</th>
-                  <th style="width:170px;">Date (UTC)</th>
-                  <th style="width:140px;">Network</th>
-                  <th>Tx / Proof</th>
-                  <th style="width:220px;">Notes</th>
+                  <th style="width:130px;">Version</th>
+                  <th style="width:170px;">Status</th>
+                  <th>Release manifest</th>
+                  <th>Manifest SHA-256</th>
+                  <th>Timestamp receipt</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td class="mono">0.5.0</td>
-                  <td class="mono">2026-02-15</td>
-                  <td class="mono">VeChain</td>
-                  <td class="mono">0xABC123…</td>
-                  <td>Uniform navigation release</td>
-                </tr>
-                <tr>
-                  <td class="mono">0.6.0</td>
-                  <td class="mono">2026-03-01</td>
-                  <td class="mono">Flare</td>
-                  <td class="mono">0xDEF456…</td>
-                  <td>Registry page added</td>
+                  <td class="mono">v0.1.0</td>
+                  <td><span class="pill"><span class="dot good" aria-hidden="true"></span>Frozen release</span></td>
+                  <td class="mono"><a href="../releases/v0.1.0/manifest.json">../releases/v0.1.0/manifest.json</a></td>
+                  <td class="mono"><a href="../releases/v0.1.0/manifest.sha256">../releases/v0.1.0/manifest.sha256</a></td>
+                  <td class="mono"><a href="../anchors/v0.1.0/manifest.sha256.ots">../anchors/v0.1.0/manifest.sha256.ots</a></td>
                 </tr>
               </tbody>
             </table>
-          </div>
 
-          <div class="card">
-            <div class="pill" style="margin-bottom:10px;"><span class="dot" aria-hidden="true"></span><strong>Evidence Ledger</strong></div>
-            <table role="table" aria-label="Evidence Ledger versions">
-              <thead>
-                <tr>
-                  <th style="width:140px;">Version</th>
-                  <th style="width:170px;">Date (UTC)</th>
-                  <th style="width:140px;">Network</th>
-                  <th>Tx / Proof</th>
-                  <th style="width:220px;">Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="mono">0.3.2</td>
-                  <td class="mono">2026-01-20</td>
-                  <td class="mono">VeChain</td>
-                  <td class="mono">0x789XYZ…</td>
-                  <td>Schema stabilization</td>
-                </tr>
-                <tr>
-                  <td class="mono">0.4.0</td>
-                  <td class="mono">2026-02-10</td>
-                  <td class="mono">Ethereum</td>
-                  <td class="mono">0x456LMN…</td>
-                  <td>Manifest canonicalization</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+            <div class="divider"></div>
 
-          <div class="card">
-            <div class="pill" style="margin-bottom:10px;"><span class="dot good" aria-hidden="true"></span><strong>Tool Inventory</strong></div>
-            <table role="table" aria-label="Tool Inventory versions">
-              <thead>
-                <tr>
-                  <th style="width:140px;">Version</th>
-                  <th style="width:170px;">Date (UTC)</th>
-                  <th style="width:140px;">Network</th>
-                  <th>Tx / Proof</th>
-                  <th style="width:220px;">Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="mono">1.0.0</td>
-                  <td class="mono">2026-02-05</td>
-                  <td class="mono">Flare</td>
-                  <td class="mono">0xAAA111…</td>
-                  <td>First stable release</td>
-                </tr>
-                <tr>
-                  <td class="mono">1.1.0</td>
-                  <td class="mono">2026-02-18</td>
-                  <td class="mono">Flare</td>
-                  <td class="mono">0xBBB222…</td>
-                  <td>Serial verification logic</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+            <div class="grid" style="margin-top:12px;">
+              <div class="card span7">
+                <h3>What this release record means</h3>
+                <ul>
+                  <li><strong>manifest.json</strong> is the canonical release record.</li>
+                  <li><strong>manifest.sha256</strong> is the SHA-256 hash of the canonical manifest bytes.</li>
+                  <li><strong>manifest.sha256.ots</strong> is the timestamp receipt for the published hash file.</li>
+                  <li>The release is append-only: if the standard changes, publish a new version instead of rewriting this one.</li>
+                </ul>
+              </div>
 
+              <div class="card span5">
+                <h3>What this page is not</h3>
+                <ul>
+                  <li>Not an Oracle Registry page.</li>
+                  <li>Not an Evidence Ledger product page.</li>
+                  <li>Not a customer, influencer, prediction, or scoring registry.</li>
+                  <li>Not a blockchain anchoring specification.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
+
+      <section class="panel span12" aria-label="Verification model">
+        <h2>Verification model</h2>
+        <p class="small">
+          Verification depends on the original release content plus the published hash record.
+          A hash is one-way: it cannot recreate the original. It can only confirm that a supplied file
+          matches the published digest.
+        </p>
+
+<pre>
+1) Obtain the release manifest:
+   ../releases/v0.1.0/manifest.json
+
+2) Canonicalize the manifest using the v0.1.0 rules:
+   - recursive lexicographic key sorting for objects
+   - arrays preserve order
+   - JSON.stringify(..., null, 2)-style formatting
+   - UTF-8 bytes
+   - no trailing newline
+
+3) Compute:
+   SHA-256( UTF-8(canonicalJson(manifest)) )
+
+4) Compare the result with:
+   ../releases/v0.1.0/manifest.sha256
+
+5) If using the timestamp receipt, verify:
+   ../anchors/v0.1.0/manifest.sha256.ots
+</pre>
+      </section>
+
+      <section class="panel span12" aria-label="Scope boundary">
+        <h2>Scope boundary</h2>
+        <p class="small">
+          This registry is intentionally narrow. It records releases of the base standard only.
+          Profiles and applications can be built on top of the standard, but their rules, identities,
+          scoring systems, user interfaces, governance models, and anchoring mechanisms are outside
+          the scope of v0.1.0.
+        </p>
       </section>
     </div>
 
     <footer class="foot" aria-label="Footer">
       <div>
-        <strong>Versioning &amp; Anchoring</strong><br/>
-        <span class="small">Static registry mockup</span>
+        <strong>Versioning &amp; Anchoring Standard</strong><br/>
+        <span class="small">Release registry • manifest hash • timestamp receipt</span>
       </div>
       <div>
-        <a href="index.html">Home</a>
+        <a href="index.html">Home</a> •
+        <a href="manifest.html">Manifest</a> •
+        <a href="verify.html">Verify</a>
       </div>
     </footer>
   </main>

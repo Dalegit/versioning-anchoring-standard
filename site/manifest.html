@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Versioning & Anchoring Standard — Manifest Format</title>
-  <meta name="description" content="Release manifest structure, required fields, recommended fields, and determinism notes." />
+  <meta name="description" content="v0.1.0 release manifest structure, canonicalization rules, artifact hashes, and manifest hashing discipline." />
   <meta name="theme-color" content="#0b5fff" />
   <style>
     :root{--bg:#ffffff;--fg:#0f172a;--muted:#475569;--muted2:#64748b;--line:#e2e8f0;--card:#f8fafc;--accent:#0b5fff;--accent2:#2563eb;--shadow:0 10px 30px rgba(2,6,23,.08);--radius:18px;--mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;--sans:ui-sans-serif, system-ui,-apple-system, Segoe UI, Roboto, Helvetica, Arial,"Apple Color Emoji","Segoe UI Emoji";--max:1120px;}
@@ -91,50 +91,58 @@
 
   <main class="wrap">
     <h1>Release Manifest Format</h1>
-<div class="statusline" aria-label="Status">
+
+    <div class="statusline" aria-label="Status">
       <span class="pill"><strong>Draft</strong> v0.1.0</span>
       <span class="pill">Scope: deterministic commitment + release manifests</span>
       <span class="pill">Anchoring infrastructure: not included</span>
     </div>
 
     <p class="lead">
-      The release manifest is the canonical JSON document you hash and (optionally) anchor.
-      Its bytes must be deterministic under the canonicalization rules.
+      The release manifest is the canonical JSON document you hash and optionally timestamp.
+      In v0.1.0 the shape is deliberately small: a schema version, release facts, and an ordered
+      list of artifact paths with their SHA-256 hashes.
     </p>
-<div class="note">
-        <strong>Scope note:</strong> The manifest defines what is hashed and verified. Anchoring receipts (TxIDs, timestamps, etc.) MUST be stored outside the manifest (e.g., in a registry log or release notes).
-      </div>
+
+    <div class="note" style="margin-top:12px;">
+      <strong>Scope note:</strong>
+      v0.1.0 defines the manifest shape, canonicalization rules, and SHA-256 hashing discipline.
+      Signatures, governance, identity, scoring systems, prediction resolution, and anchoring mechanics
+      are outside the scope of the base standard.
+    </div>
 
     <div class="grid" aria-label="Manifest format layout">
       <section class="panel span7" id="structure" aria-label="Example structure">
-        <h2>Example (baseline structure)</h2>
-        <p class="small">This is the conceptual shape described by the system overview.</p>
+        <h2>v0.1.0 manifest shape</h2>
+        <p class="small">
+          This is the accepted top-level shape for the v0.1.0 base standard.
+          The <span class="mono">artifacts</span> field is an array. Array order is preserved.
+        </p>
 <pre>{
-  "schemaVersion": "1.0",
+  "schemaVersion": "0.1.0",
   "release": {
-    "name": "Project / Standard Name",
+    "name": "Example Release",
     "version": "1.0.0",
-    "releasedAtUtc": "2026-02-11T00:00:00Z"
+    "releasedAtUtc": "2026-05-01T00:00:00Z"
   },
-  "artifacts": {
-    "schemas": [
-      { "id": "example.schema", "version": "1.0", "sha256": "..." }
-    ],
-    "documentation": [
-      { "id": "canonicalization_rules", "sha256": "..." }
-    ]
-  }
+  "artifacts": [
+    {
+      "path": "payload.txt",
+      "sha256": "&lt;sha256-of-artifact&gt;"
+    }
+  ]
 }</pre>
       </section>
 
       <aside class="card span5" aria-label="Canonicalization reminder">
-        <h3>Determinism reminder</h3>
+        <h3>Canonicalization reminder</h3>
         <ul>
-          <li>UTF-8 encoded JSON</li>
-          <li>Keys sorted lexicographically (recursive)</li>
-          <li>Stable formatting</li>
-          <li>Normalized line endings (LF recommended)</li>
-          <li>No trailing newline unless defined</li>
+          <li>UTF-8 encoded JSON.</li>
+          <li>Object keys sorted lexicographically, recursively.</li>
+          <li>Arrays preserve order.</li>
+          <li><code>JSON.stringify(..., null, 2)</code>-style formatting.</li>
+          <li>No trailing newline.</li>
+          <li>This is not full RFC 8785 JCS.</li>
         </ul>
         <div class="divider"></div>
         <p class="small">
@@ -144,64 +152,92 @@
 
       <section class="panel span12" id="required" aria-label="Required fields">
         <h2>Required fields</h2>
-        <p class="small">These fields are required to make the manifest meaningful and verifiable.</p>
+        <p class="small">These fields are required for the v0.1.0 release manifest.</p>
 <pre>
 REQUIRED: schemaVersion
-- String identifying the manifest schema version (e.g., "1.0").
-- If the manifest structure changes, schemaVersion MUST be updated and versioned.
+- String.
+- For this base standard release, use "0.1.0".
+
+REQUIRED: release
+- Object containing the release facts.
 
 REQUIRED: release.name
-- Human-readable name of the project/standard/protocol being released.
+- Human-readable name of the release.
 
 REQUIRED: release.version
-- MUST follow SemVer: MAJOR.MINOR.PATCH
-- MUST be unique and never reused.
+- String version for the released thing.
+- SHOULD follow SemVer where applicable.
 
 REQUIRED: release.releasedAtUtc
-- MUST be UTC in ISO 8601 format.
-- Used for registry display and chronology expectations.
-- The blockchain anchor may be later than this time, but should not contradict it.
+- Manually fixed UTC timestamp in ISO 8601 format.
+- Treated as an immutable release fact.
+- SHOULD NOT be generated dynamically during builds.
 
 REQUIRED: artifacts
-- MUST include the release artifacts to which this release refers.
+- Array of artifact records.
+- Array order is preserved by canonicalization.
+- Each entry identifies a released artifact and the SHA-256 hash of that artifact's bytes.
 
-REQUIRED: artifacts.schemas (if schemas are part of the release bundle)
-- List of schema artifacts included in the release.
-- Each entry SHOULD include stable identifiers and SHA-256 hashes.
+REQUIRED: artifacts[].path
+- String path to the artifact within the release bundle.
 
-REQUIRED: artifacts.documentation (if docs are part of the release bundle)
-- List of documentation artifacts included in the release.
-- Each entry SHOULD include stable identifiers and SHA-256 hashes.
+REQUIRED: artifacts[].sha256
+- Lowercase 64-character hexadecimal SHA-256 digest of the artifact bytes.
 </pre>
       </section>
 
-      <section class="panel span12" id="recommended" aria-label="Recommended fields">
-        <h2>Recommended fields (non-breaking additions)</h2>
+      <section class="panel span12" id="hashing" aria-label="Manifest hash">
+        <h2>Manifest hash</h2>
         <p class="small">
-          These fields are not mandated by the overview, but are consistent with the discipline:
-          they improve verification without changing the core rules.
+          The manifest hash is computed from the canonical JSON bytes of the manifest.
         </p>
 <pre>
-RECOMMENDED: release.notes
-- Short description of what changed and why.
-
-RECOMMENDED: artifacts[*].sha256
-- SHA-256 hashes for each artifact file.
-- This is separate from the manifest hash. The manifest hash commits to the list and the artifact hashes.
-
-RECOMMENDED: source.repository and source.gitCommit
-- If source-controlled, include repository reference and commit.
-- Useful for reproducibility (but not required for hashing discipline).
-
-RECOMMENDED: registryHints.deprecated
-- If a release is superseded, mark it deprecated in the registry (do not rewrite old releases).
+manifestSha256 =
+  SHA-256( UTF-8(canonicalJson(manifest)) )
 </pre>
+
+        <div class="divider"></div>
+
+        <p class="small">
+          The manifest hash commits to the release facts and to the listed artifact hashes.
+          It is not the same as an individual artifact hash.
+        </p>
+      </section>
+
+      <section class="panel span12" id="not-in-scope" aria-label="Out of scope fields">
+        <h2>Do not add these to the v0.1.0 base manifest</h2>
+        <p class="small">
+          These may belong in later profiles, application records, registry rows, or separate receipt files,
+          but they are not part of the v0.1.0 base manifest shape.
+        </p>
+<pre>
+OUT OF SCOPE FOR THE BASE v0.1.0 MANIFEST:
+- signatures
+- governance fields
+- user identity fields
+- scoring systems
+- prediction resolution fields
+- application-specific registry fields
+- blockchain TxIDs
+- block numbers
+- timestamp receipt metadata
+- artifacts.schemas / artifacts.documentation nested groups
+</pre>
+      </section>
+
+      <section class="panel span12" id="example-notes" aria-label="Example notes">
+        <h2>Example notes</h2>
+        <p class="small">
+          If a project wants a richer domain-specific record, it should define a separate profile or application
+          record that still obeys the base canonicalization and hashing discipline. The base manifest should stay
+          small, reproducible, and boring.
+        </p>
       </section>
     </div>
 
     <footer class="foot" aria-label="Footer" style="margin-top:28px;padding-top:18px;border-top:1px solid var(--line);display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;color:var(--muted);font-size:13px;">
       <div>
-        <strong>Versioning & Anchoring Standard</strong><br/>
+        <strong>Versioning &amp; Anchoring Standard</strong><br/>
         <span class="small">Manifest documentation • Static page</span>
       </div>
       <div>
