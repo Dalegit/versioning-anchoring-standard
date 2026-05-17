@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "0.1.0",
+  "release": {
+    "name": "Versioning & Anchoring Standard",
+    "version": "0.1.1",
+    "releasedAtUtc": "2026-05-12T00:00:00Z"
+  },
+  "artifacts": [
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "aeb4fef41586d4f6d7e2746955004742638e81daae448b2dd323def064e39ac8"
+    },
+    {
+      "path": "site/index.html",
+      "sha256": "d6b84ad5fbdc0f373a83edf5f5762935065d0f115630d949189e0757258e0ed3"
+    },
+    {
+      "path": "site/manifest.html",
+      "sha256": "17ced750028a0a72933aa7e2d7918c2abe0a0d09b9380a1ae4bf2b16ea6d1bac"
+    },
+    {
+      "path": "site/registry.html",
+      "sha256": "17cfbe1046c4de5adbd8897bb768f9067cb8033d4fcb71d3cdebb12c3c52428a"
+    }
+  ]
+}
