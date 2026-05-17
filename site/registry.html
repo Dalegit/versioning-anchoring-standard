@@ -289,7 +289,7 @@
     <h1>Versioning &amp; Anchoring Standard Release Registry</h1>
 
     <div class="statusline" aria-label="Status">
-      <span class="pill"><strong>Current</strong> v0.1.0</span>
+      <span class="pill"><strong>Current</strong> v0.1.1</span>
       <span class="pill">Scope: deterministic commitment + release manifests</span>
       <span class="pill">Anchoring infrastructure: not included in v0.1.0</span>
     </div>
@@ -328,6 +328,13 @@
               </thead>
               <tbody>
                 <tr>
+                  <td class="mono">v0.1.1</td>
+                  <td><span class="pill"><span class="dot good" aria-hidden="true"></span>Frozen release</span></td>
+                  <td class="mono"><a href="../releases/v0.1.1/manifest.json">../releases/v0.1.1/manifest.json</a></td>
+                  <td class="mono"><a href="../releases/v0.1.1/manifest.sha256">../releases/v0.1.1/manifest.sha256</a></td>
+                  <td class="mono"><a href="../anchors/v0.1.1/manifest.sha256.ots">../anchors/v0.1.1/manifest.sha256.ots</a></td>
+                </tr>
+                <tr>
                   <td class="mono">v0.1.0</td>
                   <td><span class="pill"><span class="dot good" aria-hidden="true"></span>Frozen release</span></td>
                   <td class="mono"><a href="../releases/v0.1.0/manifest.json">../releases/v0.1.0/manifest.json</a></td>
@@ -343,10 +350,12 @@
               <div class="card span7">
                 <h3>What this release record means</h3>
                 <ul>
-                  <li><strong>manifest.json</strong> is the canonical release record.</li>
+                  <li><strong>v0.1.0</strong> is the original frozen release.</li>
+                  <li><strong>v0.1.1</strong> is a documentation/site cleanup release.</li>
+                  <li><strong>manifest.json</strong> is the canonical release record for each version.</li>
                   <li><strong>manifest.sha256</strong> is the SHA-256 hash of the canonical manifest bytes.</li>
                   <li><strong>manifest.sha256.ots</strong> is the timestamp receipt for the published hash file.</li>
-                  <li>The release is append-only: if the standard changes, publish a new version instead of rewriting this one.</li>
+                  <li>The release history is append-only: publish a new version instead of rewriting an old one.</li>
                 </ul>
               </div>
 
@@ -373,7 +382,9 @@
         </p>
 
 <pre>
-1) Obtain the release manifest:
+1) Choose the release you want to verify:
+   ../releases/v0.1.1/manifest.json
+   or
    ../releases/v0.1.0/manifest.json
 
 2) Canonicalize the manifest using the v0.1.0 rules:
@@ -386,10 +397,14 @@
 3) Compute:
    SHA-256( UTF-8(canonicalJson(manifest)) )
 
-4) Compare the result with:
+4) Compare the result with the matching release hash:
+   ../releases/v0.1.1/manifest.sha256
+   or
    ../releases/v0.1.0/manifest.sha256
 
-5) If using the timestamp receipt, verify:
+5) If using the timestamp receipt, verify the matching .ots file:
+   ../anchors/v0.1.1/manifest.sha256.ots
+   or
    ../anchors/v0.1.0/manifest.sha256.ots
 </pre>
       </section>
